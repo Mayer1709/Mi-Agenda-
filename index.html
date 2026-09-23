@@ -39,7 +39,20 @@ h1{margin:0;font-size:28px}.sub{color:var(--muted);font-size:13px;margin-top:4px
 .onboard{position:fixed;inset:0;background:rgba(40,30,30,.45);display:none;align-items:flex-end;justify-content:center;z-index:50}.onboard.show{display:flex}.sheet{background:#fff;border-radius:28px 28px 0 0;max-width:780px;width:100%;max-height:92vh;overflow:auto;padding:20px 16px calc(25px + env(safe-area-inset-bottom))}
 .sheet h2{margin:0 0 5px}.sheet p{color:var(--muted);font-size:13px}.field{margin:11px 0}.field label{display:block;font-size:12px;font-weight:800;margin-bottom:5px}.field input,.field select{width:100%;padding:11px;border:1px solid var(--line);border-radius:12px;background:#fff}.choiceGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.choice{border:1px solid var(--line);background:#fff;border-radius:14px;padding:11px;text-align:left}.choice.selected{background:var(--pink2);border-color:var(--pink)}.checkrow{display:flex;gap:9px;align-items:center;padding:8px 0;font-size:13px}
 @media(max-width:430px){.featureGrid{grid-template-columns:1fr 1fr}.choiceGrid{grid-template-columns:1fr 1fr}}
-</style>
+
+.checklistWrap{background:#fff;border:1px solid var(--line);border-radius:18px;padding:13px;margin-top:10px}
+.progressBar{height:9px;background:#f0e9e9;border-radius:99px;overflow:hidden;margin:8px 0}
+.progressFill{height:100%;width:0;background:var(--green);border-radius:99px;transition:width .25s}
+.checkItem{display:grid;grid-template-columns:28px 1fr auto;gap:9px;align-items:center;padding:11px 4px;border-bottom:1px solid #f0ecec}
+.checkItem:last-child{border-bottom:0}
+.checkItem input{width:22px;height:22px;accent-color:var(--green)}
+.checkItem.done{opacity:.55}.checkItem.done .checkMain{text-decoration:line-through}
+.checkMain{font-size:14px;font-weight:700}.checkMeta{font-size:11px;color:var(--muted);margin-top:2px}
+.checkTime{font-size:11px;font-weight:800;color:#775e61;background:var(--pink2);padding:5px 7px;border-radius:9px}
+.checkActions{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}
+.filterBtn{border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px 10px;font-size:11px;font-weight:700}
+.filterBtn.active{background:var(--pink2)}
+
 </head>
 <body>
 <div class="app">
@@ -107,6 +120,22 @@ h1{margin:0;font-size:28px}.sub{color:var(--muted);font-size:13px;margin-top:4px
     <div class="feature"><b>🌙 Rutina PM</b><span>Limpieza + tratamiento que toleres + hidratación.</span></div>
     <div class="feature"><b>💆 Cabello</b><span>Reserva un bloque semanal para lavado, mascarilla o cuidado según tu tipo de cabello.</span></div>
   </div>
+</section>
+
+<section class="panel">
+  <div class="title">
+    <h2>☑️ Checklist de hoy</h2>
+    <span id="checkPercent">0%</span>
+  </div>
+  <div class="progressBar"><div id="checkProgress" class="progressFill"></div></div>
+  <div id="checkSummary" class="sub">0 de 0 completadas</div>
+  <div class="checkActions">
+    <button class="filterBtn active" id="filterAll" onclick="setCheckFilter('all')">Todas</button>
+    <button class="filterBtn" id="filterPending" onclick="setCheckFilter('pending')">Pendientes</button>
+    <button class="filterBtn" id="filterDone" onclick="setCheckFilter('done')">Completadas</button>
+    <button class="filterBtn" onclick="checkAllToday()">✓ Completar todo</button>
+  </div>
+  <div id="dailyChecklist" class="checklistWrap"></div>
 </section>
 <section id="homeView" class="view active">
 <div class="panel">
@@ -297,7 +326,7 @@ function closePlanner(){document.getElementById('onboard').classList.remove('sho
 function pickStyle(el){document.querySelectorAll('.choice').forEach(x=>x.classList.remove('selected'));el.classList.add('selected');profile.style=el.dataset.style}
 function savePlanner(){
   profile={wake:pWake.value||defaultProfile.wake,sleep:pSleep.value||defaultProfile.sleep,work:pWork.value||defaultProfile.work,workEnd:pWorkEnd.value||defaultProfile.workEnd,income:Math.max(0,Number(pIncome.value)||0),goal:pGoal.value.trim()||defaultProfile.goal,style:profile.style||defaultProfile.style,exercise:pExercise.checked,chores:pChores.checked,skin:pSkin.checked,incomeOn:pIncomeOn.checked};
-  localStorage.setItem(PROFILE_KEY,JSON.stringify(profile));closePlanner();generateSmartDay();alert('✨ Tu asistente ya tiene tu nueva estructura diaria.');
+  localStorage.setItem(PROFILE_KEY,JSON.stringify(profile));closePlanner();generateSmartDay();checklistState[todayKey()] = {items:smartRoutineFor(new Date()).map((x,i)=>({id:i,time:x.time,title:x.title,desc:x.desc,done:false,kind:x.kind}))}; saveChecklist(); renderChecklist();alert('✨ Tu asistente ya tiene tu nueva estructura diaria.');
 }
 function addMins(time,mins){if(!/^\d\d:\d\d$/.test(time))return time;let [h,m]=time.split(':').map(Number);let x=h*60+m+mins; x=((x%1440)+1440)%1440;return String(Math.floor(x/60)).padStart(2,'0')+':'+String(x%60).padStart(2,'0')}
 function smartRoutineFor(date=new Date()){
@@ -408,7 +437,60 @@ function learnFromToday(){
   alert(`🧠 Registrado: ${assistantState.preferences.lastCompletion}% completado hoy. El asistente usará este patrón para futuras sugerencias.`);
 }
 
-document.getElementById('calMonth').value=new Date().toISOString().slice(0,7);render();generateSmartDay();renderAssistant();setInterval(next,30000);
+
+// --- Daily checklist ---
+const CHECK_KEY='mi-agenda-daily-checklist-v1';
+let checklistState=JSON.parse(localStorage.getItem(CHECK_KEY)||'{}');
+let checkFilter='all';
+function todayKey(){return new Date().toISOString().slice(0,10)}
+function checklistItems(){
+  const key=todayKey(), routineItems=smartRoutineFor(new Date());
+  if(!checklistState[key]) checklistState[key]={items:routineItems.map((x,i)=>({id:i,time:x.time,title:x.title,desc:x.desc,done:false,kind:x.kind}))};
+  return checklistState[key].items;
+}
+function saveChecklist(){localStorage.setItem(CHECK_KEY,JSON.stringify(checklistState))}
+function toggleChecklist(id){
+  const item=checklistItems().find(x=>x.id===id);
+  if(item)item.done=!item.done;
+  saveChecklist(); renderChecklist(); renderAssistant();
+}
+function checkAllToday(){
+  checklistItems().forEach(x=>x.done=true);
+  saveChecklist(); renderChecklist(); renderAssistant();
+}
+function setCheckFilter(filter){
+  checkFilter=filter;
+  ['All','Pending','Done'].forEach(x=>{const el=document.getElementById('filter'+x);if(el)el.classList.toggle('active',filter===x.toLowerCase())});
+  renderChecklist();
+}
+function addChecklistTask(){
+  const text=prompt('¿Qué quieres agregar a tu checklist de hoy?');
+  if(!text||!text.trim())return;
+  const items=checklistItems();
+  items.push({id:Date.now(),time:'',title:text.trim(),desc:'Tarea personalizada',done:false,kind:'custom'});
+  saveChecklist();renderChecklist();
+}
+function renderChecklist(){
+  const items=checklistItems();
+  const visible=items.filter(x=>checkFilter==='all'||(checkFilter==='pending'&&!x.done)||(checkFilter==='done'&&x.done));
+  const done=items.filter(x=>x.done).length,total=items.length,pct=total?Math.round(done/total*100):0;
+  const list=document.getElementById('dailyChecklist');
+  if(!list)return;
+  document.getElementById('checkPercent').textContent=pct+'%';
+  document.getElementById('checkProgress').style.width=pct+'%';
+  document.getElementById('checkSummary').textContent=`${done} de ${total} completadas`;
+  list.innerHTML=visible.map(x=>`<div class="checkItem ${x.done?'done':''}">
+    <input type="checkbox" ${x.done?'checked':''} onchange="toggleChecklist(${x.id})">
+    <div class="checkMain">${esc(x.title)}<div class="checkMeta">${esc(x.desc||'')}</div></div>
+    ${x.time?`<span class="checkTime">${x.time}</span>`:'<span></span>'}
+  </div>`).join('') || '<div class="empty">No hay elementos en esta vista. ✨</div>';
+  if(!document.getElementById('addChecklistBtn')){
+    const b=document.createElement('button');b.id='addChecklistBtn';b.className='btn secondary';b.textContent='+ Agregar a checklist';
+    b.onclick=addChecklistTask;document.querySelector('#dailyChecklist').parentElement.parentElement.appendChild(b);
+  }
+}
+
+document.getElementById('calMonth').value=new Date().toISOString().slice(0,7);render();generateSmartDay();renderChecklist();renderAssistant();setInterval(next,30000);
 </script>
 <script>if("serviceWorker" in navigator){navigator.serviceWorker.register("sw.js").catch(()=>{});}</script></body>
 </html>
