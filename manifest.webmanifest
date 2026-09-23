@@ -1,23 +1,10 @@
 {
-  "name": "Mi Agenda — Personal",
-  "short_name": "Mi Agenda",
-  "description": "Agenda personal dinámica con tareas, rutinas y reprogramación.",
-  "start_url": "./",
-  "display": "standalone",
-  "background_color": "#fff8f6",
-  "theme_color": "#d9828b",
-  "orientation": "portrait-primary",
-  "icons": [
-    {
-      "src": "icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png"
-    },
-    {
-      "src": "icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
-    }
-  ]
+  "name":"Mi Agenda — Asistente Personal",
+  "short_name":"Mi Agenda",
+  "start_url":".",
+  "display":"standalone",
+  "background_color":"#fff8f6",
+  "theme_color":"#d9828b",
+  "lang":"es",
+  "description":"Asistente personal flexible para rutina, hogar, autocuidado, ejercicio, compras y objetivos."
 }

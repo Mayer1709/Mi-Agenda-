@@ -3,13 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#d9828b">
+<link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#d9828b">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Mi Agenda">
-<title>Mi Agenda — Personal</title>
+<title>Mi Agenda — Asistente Personal</title>
 <style>
 :root{--bg:#fff8f6;--card:#fff;--ink:#332b2b;--muted:#817477;--pink:#d9828b;--pink2:#f8e4e5;--green:#6f9b7b;--yellow:#fff4cf;--blue:#e9f0fa;--line:#eadedf;--shadow:0 7px 22px rgba(80,45,45,.07)}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Neue",Arial,sans-serif;padding-bottom:78px}
@@ -28,6 +28,17 @@ h1{margin:0;font-size:28px}.sub{color:var(--muted);font-size:13px;margin-top:4px
 .weekrow{display:grid;grid-template-columns:76px 1fr;gap:8px;padding:10px 0;border-bottom:1px solid var(--line);font-size:13px}.weekrow b{font-size:12px}
 .bottom{position:fixed;bottom:0;left:0;right:0;background:#fffdfd;border-top:1px solid var(--line);display:flex;justify-content:center;z-index:10}.nav{max-width:780px;width:100%;display:grid;grid-template-columns:repeat(5,1fr);gap:3px;padding:7px 8px calc(7px + env(safe-area-inset-bottom))}.nav button{border:0;background:transparent;padding:7px 2px;border-radius:12px;font-size:11px;color:#6f6567}.nav button.active{background:var(--pink2);font-weight:800}
 @media(max-width:430px){.stats{grid-template-columns:repeat(2,1fr)}.task{grid-template-columns:28px 51px 1fr 34px}.text{font-size:13px}.grid2{grid-template-columns:1fr}}
+
+.assistantHero{background:linear-gradient(135deg,#f8e3e8,#fdf8f3 55%,#e7f1ea);border-radius:28px;padding:18px;margin-top:14px;box-shadow:var(--shadow)}
+.assistantHero h2{margin:0 0 5px;font-size:21px}.assistantHero p{margin:0;color:var(--muted);font-size:13px;line-height:1.45}
+.chips{display:flex;gap:7px;overflow:auto;padding:4px 0 2px}.chip{white-space:nowrap;border:1px solid var(--line);background:#fff;border-radius:999px;padding:8px 11px;font-size:12px;font-weight:700}
+.featureGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.feature{border:1px solid var(--line);background:#fff;border-radius:16px;padding:12px}.feature b{display:block;font-size:14px}.feature span{font-size:11px;color:var(--muted);line-height:1.35}
+.badge{display:inline-block;font-size:10px;background:#f3e9ea;border-radius:8px;padding:3px 6px;margin-left:4px}
+.routineCard{background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px;margin:7px 0}
+.routineCard .rhead{display:flex;justify-content:space-between;gap:8px}.routineCard .rtitle{font-weight:800;font-size:14px}.routineCard small{color:var(--muted)}
+.onboard{position:fixed;inset:0;background:rgba(40,30,30,.45);display:none;align-items:flex-end;justify-content:center;z-index:50}.onboard.show{display:flex}.sheet{background:#fff;border-radius:28px 28px 0 0;max-width:780px;width:100%;max-height:92vh;overflow:auto;padding:20px 16px calc(25px + env(safe-area-inset-bottom))}
+.sheet h2{margin:0 0 5px}.sheet p{color:var(--muted);font-size:13px}.field{margin:11px 0}.field label{display:block;font-size:12px;font-weight:800;margin-bottom:5px}.field input,.field select{width:100%;padding:11px;border:1px solid var(--line);border-radius:12px;background:#fff}.choiceGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.choice{border:1px solid var(--line);background:#fff;border-radius:14px;padding:11px;text-align:left}.choice.selected{background:var(--pink2);border-color:var(--pink)}.checkrow{display:flex;gap:9px;align-items:center;padding:8px 0;font-size:13px}
+@media(max-width:430px){.featureGrid{grid-template-columns:1fr 1fr}.choiceGrid{grid-template-columns:1fr 1fr}}
 </style>
 </head>
 <body>
@@ -39,6 +50,64 @@ h1{margin:0;font-size:28px}.sub{color:var(--muted);font-size:13px;margin-top:4px
 <div class="stats"><div class="stat">✅ Hechas<b id="done">0</b></div><div class="stat">🟡 Pendientes<b id="pending">0</b></div><div class="stat">🔄 Movidas<b id="moved">0</b></div><div class="stat">📈 Progreso<b id="pct">0%</b></div></div>
 </header>
 
+
+<section class="assistantHero">
+  <h2>✨ Tu asistente personal</h2>
+  <p>No solo organiza tus tareas: construye una rutina alrededor de tu vida, cuida tus pendientes y te ayuda a avanzar hacia tus objetivos.</p>
+  <div class="chips" style="margin-top:10px">
+    <button class="chip" onclick="openPlanner()">⚙️ Personalizar</button>
+    <button class="chip" onclick="generateSmartDay()">✨ Generar mi día</button>
+    <button class="chip" onclick="showCare()">🧴 Self-care</button>
+  </div>
+</section>
+<section class="panel">
+  <div class="title"><h2>🌷 Tu sistema</h2><span id="styleLabel">Flexible</span></div>
+  <div class="featureGrid">
+    <div class="feature"><b>🏠 Casa</b><span id="homePlan">Rotación semanal para mantener todo al día.</span></div>
+    <div class="feature"><b>🏋️ Movimiento</b><span id="exercisePlan">Entrenamiento adaptado al día.</span></div>
+    <div class="feature"><b>🧴 Skincare</b><span id="skinPlan">Rutina AM/PM + tratamientos semanales.</span></div>
+    <div class="feature"><b>💰 Futuro</b><span id="incomePlan">Bloque protegido para objetivos e ingresos.</span></div>
+  </div>
+</section>
+<section class="panel">
+  <div class="title"><h2>✨ Hoy, diseñado para ti</h2><span id="smartDayLabel"></span></div>
+  <div id="smartRoutine"></div>
+</section>
+
+<section class="panel">
+  <div class="title"><h2>🧠 Asistente inteligente</h2><span>Adaptativo</span></div>
+  <div id="insightBox" class="routineCard"></div>
+  <div class="btns">
+    <button class="btn" onclick="quickLightDay()">🌿 Día ligero</button>
+    <button class="btn secondary" onclick="learnFromToday()">🧠 Analizar mi día</button>
+  </div>
+</section>
+
+<section class="panel">
+  <div class="title"><h2>🛒 Lista inteligente</h2><span id="shopCount">0 pendientes</span></div>
+  <div class="form">
+    <input id="shopItem" class="full" placeholder="Producto">
+    <input id="shopQty" placeholder="Cantidad">
+    <select id="shopCat"><option>🥦 Alimentos</option><option>👶 Bebé</option><option>🧴 Cuidado personal</option><option>🧹 Limpieza</option><option>🏠 Hogar</option><option>📦 Otros</option></select>
+    <button class="btn full" onclick="addShopping()">+ Agregar a compras</button>
+  </div>
+  <div id="shoppingList" style="margin-top:8px"></div>
+</section>
+
+<section class="panel">
+  <div class="title"><h2>🍽️ Ideas de comidas</h2><span>Rotación semanal</span></div>
+  <div id="mealPlan"></div>
+</section>
+
+<section class="panel">
+  <div class="title"><h2>🧴 Biblioteca de autocuidado</h2><span>Ideas</span></div>
+  <div class="featureGrid">
+    <div class="feature"><b>🧖‍♀️ Mascarilla hidratante</b><span>Úsala en un día de recuperación y sigue con hidratante. Si tu piel es sensible, prueba primero una zona pequeña.</span></div>
+    <div class="feature"><b>🧴 Rutina AM</b><span>Limpieza suave + hidratación + protector solar.</span></div>
+    <div class="feature"><b>🌙 Rutina PM</b><span>Limpieza + tratamiento que toleres + hidratación.</span></div>
+    <div class="feature"><b>💆 Cabello</b><span>Reserva un bloque semanal para lavado, mascarilla o cuidado según tu tipo de cabello.</span></div>
+  </div>
+</section>
 <section id="homeView" class="view active">
 <div class="panel">
 <div class="title"><h2>☀️ Mi día</h2><span id="todayDate"></span></div>
@@ -88,6 +157,36 @@ h1{margin:0;font-size:28px}.sub{color:var(--muted);font-size:13px;margin-top:4px
 </section>
 </div>
 
+
+<div id="onboard" class="onboard">
+ <div class="sheet">
+  <div class="title"><h2>✨ Creador de Mi Rutina</h2><button class="iconbtn" onclick="closePlanner()">✕</button></div>
+  <p>Primero fijamos lo que no se puede mover. Después el asistente construye lo demás.</p>
+  <div class="field"><label>¿A qué hora despiertas?</label><input id="pWake" type="time"></div>
+  <div class="field"><label>¿A qué hora quieres dormir?</label><input id="pSleep" type="time"></div>
+  <div class="field"><label>Inicio del trabajo/estudio</label><input id="pWork" type="time"></div>
+  <div class="field"><label>Fin del trabajo/estudio</label><input id="pWorkEnd" type="time"></div>
+  <div class="field"><label>Bloque diario para futuro/ingresos</label><input id="pIncome" type="number" min="0" max="180" value="30"></div>
+  <div class="field"><label>Tu objetivo principal</label><input id="pGoal" placeholder="Ej.: sentirme organizada, ganar más, cuidarme..."></div>
+  <div class="field"><label>Estilo de rutina</label>
+   <div class="choiceGrid" id="styleChoices">
+    <button class="choice" data-style="Soft & Balanced" onclick="pickStyle(this)">🌸 Soft & Balanced<br><small>Equilibrio y calma</small></button>
+    <button class="choice" data-style="Power Mode" onclick="pickStyle(this)">🔥 Power Mode<br><small>Acción y energía</small></button>
+    <button class="choice" data-style="CEO Mode" onclick="pickStyle(this)">💼 CEO Mode<br><small>Metas y productividad</small></button>
+    <button class="choice" data-style="Wellness" onclick="pickStyle(this)">🧘 Wellness<br><small>Salud y autocuidado</small></button>
+    <button class="choice" data-style="Family Flow" onclick="pickStyle(this)">👨‍👩‍👧 Family Flow<br><small>Familia primero</small></button>
+    <button class="choice" data-style="Minimal" onclick="pickStyle(this)">⚡ Minimal<br><small>Solo lo esencial</small></button>
+   </div>
+  </div>
+  <div class="field"><label>¿Qué quieres incluir?</label>
+   <label class="checkrow"><input id="pExercise" type="checkbox" checked> 🏋️ Ejercicio</label>
+   <label class="checkrow"><input id="pChores" type="checkbox" checked> 🏠 Rotación de casa</label>
+   <label class="checkrow"><input id="pSkin" type="checkbox" checked> 🧴 Skincare + self-care</label>
+   <label class="checkrow"><input id="pIncomeOn" type="checkbox" checked> 💰 Bloque de futuro/ingresos</label>
+  </div>
+  <div class="btns"><button class="btn" onclick="savePlanner()">✨ Crear mi rutina</button><button class="btn secondary" onclick="closePlanner()">Cancelar</button></div>
+ </div>
+</div>
 <nav class="bottom"><div class="nav">
 <button class="active" onclick="nav('homeView',this)">🏠<br>Hoy</button>
 <button onclick="nav('calendarView',this)">🗓️<br>Calendario</button>
@@ -131,6 +230,7 @@ function render(){
  document.getElementById('rescue').innerHTML=state.rescue.length?state.rescue.map((r,i)=>`<div class="itemrow"><span>🟡 ${esc(r.text)}</span><button class="iconbtn" onclick="restore(${i})">↩️</button></div>`).join(''):'<div class="empty">Nada pendiente aquí. ✨</div>';
  next();
  calendar();
+ if(document.getElementById('insightBox')) renderInsight();
 }
 function next(){
  const now=new Date(),mins=now.getHours()*60+now.getMinutes();
@@ -153,7 +253,162 @@ function calendar(){
  for(let i=0;i<first;i++)s+='<div></div>';
  for(let n=1;n<=days;n++){let has=n===d.getDate()?' today':'';s+=`<div class="calcell${has}"><b>${n}</b><br><span>${n===d.getDate()?'Hoy':''}</span></div>`}s+='</div>';el.innerHTML=s;
 }
-document.getElementById('calMonth').value=new Date().toISOString().slice(0,7);render();setInterval(next,30000);
+
+// --- Personal Assistant layer ---
+const PROFILE_KEY='mi-agenda-assistant-profile';
+const defaultProfile={wake:'06:30',sleep:'23:00',work:'17:00',workEnd:'22:00',income:30,goal:'Sentirme organizada y avanzar en mis metas',style:'Soft & Balanced',exercise:true,chores:true,skin:true,incomeOn:true};
+let profile=Object.assign({},defaultProfile,JSON.parse(localStorage.getItem(PROFILE_KEY)||'{}'));
+
+const EXERCISE={
+0:['🏋️ Full body','Fuerza: sentadillas, puente de glúteos, remo, press de hombros y core. 25–35 min.'],
+1:['🚶 Movimiento + movilidad','Caminata ligera + movilidad de cadera, espalda y hombros. 20–30 min.'],
+2:['🍑 Piernas & glúteos','Sentadillas, zancadas, puente de glúteos y elevaciones de pantorrilla. 25–35 min.'],
+3:['❤️ Cardio suave + movilidad','Cardio moderado y estiramientos. 20–30 min.'],
+4:['💪 Tren superior + core','Brazos, espalda, hombros y abdomen. 25–35 min.'],
+5:['🎶 Actividad divertida','Baila, camina, bicicleta o actividad que disfrutes. 20–45 min.'],
+6:['🧘 Recuperación activa','Caminata suave + estiramiento/respiración. 15–25 min.']
+};
+const CHORES=[
+['🧺 Lavandería + organización','Lavar/guardar ropa y despejar superficies.'],
+['🚿 Baños','Lavamanos, inodoro, ducha y toallas.'],
+['🧹 Pisos + polvo','Aspirar/barrer, trapear y quitar polvo.'],
+['🍳 Cocina','Superficies, electrodomésticos pequeños y nevera rápida.'],
+['🛏️ Habitaciones','Ropa de cama, mesas y organización.'],
+['🛒 Compras + meal prep','Lista de compras y preparación básica de alimentos.'],
+['✨ Reset semanal','Recorrido general de la casa + preparar la semana.']
+];
+const SKIN=[
+['💧 Hidratación','AM: limpiar + sérum hidratante + crema + SPF. PM: limpiar + hidratante.'],
+['🌿 Barrera','AM: limpieza suave + hidratación + SPF. PM: limpieza + crema reparadora.'],
+['✨ Renovación suave','AM: limpieza + hidratación + SPF. PM: activo suave solo si tu piel ya lo tolera + hidratante.'],
+['🧖‍♀️ Mascarilla','Mascarilla hidratante o calmante + hidratación. Evita combinar varios activos fuertes.'],
+['☀️ Protección','AM: limpieza + hidratación + SPF. PM: limpieza + crema.'],
+['💆‍♀️ Self-care','Skincare + cuidado corporal/cabello según preferencia.'],
+['🌙 Spa & reset','Mascarilla hidratante/calmante, cuerpo, cabello y rutina nocturna relajada.']
+];
+
+function openPlanner(){
+  document.getElementById('onboard').classList.add('show');
+  pWake.value=profile.wake;pSleep.value=profile.sleep;pWork.value=profile.work;pWorkEnd.value=profile.workEnd;
+  pIncome.value=profile.income;pGoal.value=profile.goal;pExercise.checked=profile.exercise;pChores.checked=profile.chores;pSkin.checked=profile.skin;pIncomeOn.checked=profile.incomeOn;
+  document.querySelectorAll('.choice').forEach(x=>x.classList.toggle('selected',x.dataset.style===profile.style));
+}
+function closePlanner(){document.getElementById('onboard').classList.remove('show')}
+function pickStyle(el){document.querySelectorAll('.choice').forEach(x=>x.classList.remove('selected'));el.classList.add('selected');profile.style=el.dataset.style}
+function savePlanner(){
+  profile={wake:pWake.value||defaultProfile.wake,sleep:pSleep.value||defaultProfile.sleep,work:pWork.value||defaultProfile.work,workEnd:pWorkEnd.value||defaultProfile.workEnd,income:Math.max(0,Number(pIncome.value)||0),goal:pGoal.value.trim()||defaultProfile.goal,style:profile.style||defaultProfile.style,exercise:pExercise.checked,chores:pChores.checked,skin:pSkin.checked,incomeOn:pIncomeOn.checked};
+  localStorage.setItem(PROFILE_KEY,JSON.stringify(profile));closePlanner();generateSmartDay();alert('✨ Tu asistente ya tiene tu nueva estructura diaria.');
+}
+function addMins(time,mins){if(!/^\d\d:\d\d$/.test(time))return time;let [h,m]=time.split(':').map(Number);let x=h*60+m+mins; x=((x%1440)+1440)%1440;return String(Math.floor(x/60)).padStart(2,'0')+':'+String(x%60).padStart(2,'0')}
+function smartRoutineFor(date=new Date()){
+ const day=date.getDay();
+ const r=[];
+ const add=(time,title,desc,kind)=>r.push({time,title,desc,kind});
+ add(profile.wake,'🌅 Wake-up ritual','Agua, luz natural y 2 minutos para decidir las 3 prioridades del día.','wellness');
+ add(addMins(profile.wake,10),'🧴 AM skincare',profile.skin?'Limpieza + hidratación + protector solar.':'Rutina personal rápida.','skin');
+ if(profile.exercise)add(addMins(profile.wake,30),EXERCISE[day][0],EXERCISE[day][1],'exercise');
+ if(profile.chores)add(addMins(profile.wake,65),CHORES[day][0],CHORES[day][1],'home');
+ const workM=profile.work;
+ if(profile.incomeOn && profile.income>0){
+   const candidate=addMins(profile.work,-profile.income-20);
+   add(candidate,'💰 BUILD MY FUTURE',`${profile.income} min para: ${esc(profile.goal)}.`,'income');
+ }
+ add(addMins(profile.work,-15),'🎒 Transition','Preparar lo necesario para trabajo/estudio y familia.','transition');
+ add(profile.work,'💼 Trabajo / estudio','Bloque fijo. La app lo protege.','work');
+ add(profile.workEnd,'🏠 Regreso / transición','Cerrar jornada y cambiar de modo.','transition');
+ if(profile.skin)add(addMins(profile.workEnd,20),'🌙 PM skincare',SKIN[(day+1)%SKIN.length][1],'skin');
+ add(addMins(profile.workEnd,40),'🧘 Wind down','Orden ligero, preparar mañana, respiración/lectura y desconexión.','wellness');
+ add(profile.sleep,'😴 Sleep','Dormir y recuperar energía.','sleep');
+ return r.sort((a,b)=>a.time.localeCompare(b.time));
+}
+function generateSmartDay(){
+ const day=new Date().toLocaleDateString('es-US',{weekday:'long',day:'numeric',month:'long'});
+ document.getElementById('smartDayLabel').textContent=day;
+ document.getElementById('styleLabel').textContent=profile.style;
+ document.getElementById('homePlan').textContent=profile.chores?CHORES[new Date().getDay()][0]+': '+CHORES[new Date().getDay()][1]:'Casa en modo mínimo.';
+ document.getElementById('exercisePlan').textContent=profile.exercise?EXERCISE[new Date().getDay()][0]+': '+EXERCISE[new Date().getDay()][1]:'Descanso / movimiento opcional.';
+ document.getElementById('skinPlan').textContent=profile.skin?SKIN[new Date().getDay()][0]+': '+SKIN[new Date().getDay()][1]:'Self-care manual.';
+ document.getElementById('incomePlan').textContent=profile.incomeOn?`${profile.income} min · ${profile.goal}`:'Sin bloque de ingresos programado.';
+ document.getElementById('smartRoutine').innerHTML=smartRoutineFor().map(x=>`<div class="routineCard"><div class="rhead"><div class="rtitle">${x.title}</div><b>${x.time}</b></div><small>${x.desc}</small></div>`).join('');
+}
+function showCare(){
+  const day=new Date().getDay(), s=SKIN[day];
+  alert(`🧴 ${s[0]}\\n\\n${s[1]}\\n\\nLa rutina debe adaptarse a tu tipo de piel y a los productos que toleras.`);
+}
+
+
+// --- V2 intelligent assistant modules ---
+const ASSIST_KEY='mi-agenda-assistant-v2';
+let assistantState=Object.assign({
+  shopping:[],
+  completedDates:[],
+  reschedules:0,
+  lightDays:0,
+  preferences:{},
+  meals:['Avena + fruta','Pollo + arroz + vegetales','Yogur + fruta','Pescado + yuca + ensalada','Huevos + tostada','Pasta + proteína + vegetales','Comida favorita + balance']
+}, JSON.parse(localStorage.getItem(ASSIST_KEY)||'{}'));
+
+function saveAssistant(){
+  localStorage.setItem(ASSIST_KEY,JSON.stringify(assistantState));
+  renderAssistant();
+}
+function addShopping(){
+  const name=document.getElementById('shopItem').value.trim();
+  if(!name)return;
+  assistantState.shopping.push({id:Date.now(),name,qty:document.getElementById('shopQty').value.trim()||'1',cat:document.getElementById('shopCat').value,done:false});
+  document.getElementById('shopItem').value=''; document.getElementById('shopQty').value='';
+  saveAssistant();
+}
+function toggleShopping(id){
+  const x=assistantState.shopping.find(i=>i.id===id); if(x)x.done=!x.done; saveAssistant();
+}
+function removeShopping(id){
+  assistantState.shopping=assistantState.shopping.filter(i=>i.id!==id); saveAssistant();
+}
+function renderShopping(){
+  const pending=assistantState.shopping.filter(x=>!x.done), bought=assistantState.shopping.filter(x=>x.done);
+  document.getElementById('shopCount').textContent=`${pending.length} pendientes`;
+  document.getElementById('shoppingList').innerHTML=
+    [...pending,...bought].map(x=>`<div class="itemrow">
+      <span style="${x.done?'text-decoration:line-through;opacity:.55':''}">
+        <input type="checkbox" ${x.done?'checked':''} onchange="toggleShopping(${x.id})"> ${esc(x.cat)} · <b>${esc(x.name)}</b> × ${esc(x.qty)}
+      </span>
+      <button class="iconbtn" onclick="removeShopping(${x.id})">🗑️</button>
+    </div>`).join('') || '<div class="empty">Tu lista está vacía. ✨</div>';
+}
+function renderMeals(){
+  const d=new Date().getDay();
+  const names=['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+  document.getElementById('mealPlan').innerHTML=`<div class="routineCard"><b>Hoy · ${names[d]}</b><br>🍳 Desayuno: ${assistantState.meals[(d+1)%7]}<br>🥗 Almuerzo: ${assistantState.meals[(d+2)%7]}<br>🍲 Cena: ${assistantState.meals[(d+3)%7]}</div>`;
+}
+function renderInsight(){
+  const pending=state.tasks.filter(t=>!t.done).length;
+  const moved=state.tasks.filter(t=>t.moved).length+state.rescue.length;
+  let msg;
+  if(pending===0) msg='🎉 Todo completado. Tu recomendación: protege tu tiempo libre y no llenes el día con tareas nuevas.';
+  else if(moved>=3) msg='🌿 He notado varios cambios. Conviene usar una versión ligera del día y distribuir los pendientes en lugar de acumularlos.';
+  else if(profile.incomeOn && profile.income>0) msg=`💰 Tu bloque de futuro está protegido: ${profile.income} minutos para ${profile.goal}.`;
+  else msg='✨ Tu rutina tiene margen. Mantén una prioridad principal y deja espacio para imprevistos.';
+  document.getElementById('insightBox').innerHTML=`<b>${msg}</b><br><small>El asistente usa tus cambios locales para sugerir ajustes; no comparte tus datos.</small>`;
+}
+function renderAssistant(){renderShopping();renderMeals();renderInsight();}
+function quickLightDay(){
+  const movable=state.tasks.filter(t=>!t.done && !['💼 Trabajo','👦 Eithan','👶 Bebé'].includes(t.cat));
+  movable.slice(0,3).forEach(t=>{state.rescue.push({text:t.time+' — '+t.text,original:t});});
+  state.tasks=state.tasks.filter(t=>!movable.slice(0,3).includes(t));
+  assistantState.lightDays++;
+  save(); saveAssistant();
+  alert('🌿 Día ligero activado. He retirado algunas tareas flexibles para darte margen.');
+}
+function learnFromToday(){
+  const done=state.tasks.filter(t=>t.done).length, total=state.tasks.length;
+  assistantState.preferences.lastCompletion=total?Math.round(done/total*100):0;
+  assistantState.preferences.lastMoved=state.tasks.filter(t=>t.moved).length+state.rescue.length;
+  saveAssistant();
+  alert(`🧠 Registrado: ${assistantState.preferences.lastCompletion}% completado hoy. El asistente usará este patrón para futuras sugerencias.`);
+}
+
+document.getElementById('calMonth').value=new Date().toISOString().slice(0,7);render();generateSmartDay();renderAssistant();setInterval(next,30000);
 </script>
-</body>
+<script>if("serviceWorker" in navigator){navigator.serviceWorker.register("sw.js").catch(()=>{});}</script></body>
 </html>
