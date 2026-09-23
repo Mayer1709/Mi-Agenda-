@@ -2,6 +2,16 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
+
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Mi Agenda">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="application-name" content="Mi Agenda">
+<meta name="description" content="Mi Agenda — un asistente personal flexible para organizar tu día, hogar, autocuidado, ejercicio y objetivos.">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#d9828b">
 <link rel="manifest" href="manifest.webmanifest">
@@ -53,9 +63,40 @@ h1{margin:0;font-size:28px}.sub{color:var(--muted);font-size:13px;margin-top:4px
 .filterBtn{border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px 10px;font-size:11px;font-weight:700}
 .filterBtn.active{background:var(--pink2)}
 
+
+<style>
+/* --- Native-feel app shell --- */
+:root{--appnav-h:78px}
+body{padding-bottom:calc(var(--appnav-h) + env(safe-area-inset-bottom));-webkit-tap-highlight-color:transparent}
+button,input,select{font:inherit}
+button{touch-action:manipulation}
+.app{padding-top:max(12px,env(safe-area-inset-top))}
+.hero{position:relative}
+.appBadge{display:inline-flex;align-items:center;gap:6px;background:#ffffffc9;border:1px solid var(--line);padding:6px 9px;border-radius:999px;font-size:11px;font-weight:800;margin-bottom:9px}
+.installCard{background:linear-gradient(135deg,#eef7f0,#fff);border:1px solid #d9e9dc;border-radius:18px;padding:13px;margin-top:12px}
+.installCard b{font-size:14px}.installCard p{font-size:12px;color:var(--muted);margin:5px 0 9px;line-height:1.4}
+.appnav{position:fixed;bottom:0;left:0;right:0;z-index:40;background:#fffdfd;border-top:1px solid var(--line);padding:6px 8px calc(6px + env(safe-area-inset-bottom));box-shadow:0 -6px 22px rgba(70,40,40,.06)}
+.appnavInner{max-width:780px;margin:auto;display:grid;grid-template-columns:repeat(5,1fr);gap:4px}
+.appnav button{border:0;background:transparent;border-radius:14px;padding:7px 3px;color:#756a6d;font-size:10px;font-weight:700}
+.appnav button .navIcon{display:block;font-size:20px;line-height:20px;margin-bottom:2px}
+.appnav button.active{background:var(--pink2);color:var(--ink)}
+.fab{position:fixed;right:18px;bottom:calc(var(--appnav-h) + 16px);z-index:41;width:54px;height:54px;border:0;border-radius:50%;background:var(--pink);color:#fff;font-size:27px;box-shadow:0 8px 22px rgba(100,45,55,.22)}
+.quickInstall{display:none}
+.quickInstall.show{display:block}
+@media(min-width:781px){.appnav{bottom:12px;border:1px solid var(--line);border-radius:20px;left:50%;right:auto;transform:translateX(-50%);width:760px}.fab{right:calc(50% - 370px)}}
+</style>
+
 </head>
 <body>
+
 <div class="app">
+<div class="appBadge">✨ MI AGENDA · ASISTENTE PERSONAL</div>
+<div id="installCard" class="installCard">
+  <b>📱 Lleva Mi Agenda contigo</b>
+  <p>En iPhone: toca Compartir → Añadir a pantalla de inicio. Así se abre como una app.</p>
+  <button class="btn" onclick="hideInstallCard()">Entendido</button>
+</div>
+
 <header class="hero">
 <h1>🌷 Mi Agenda</h1><div class="sub">Tu centro personal para organizar el día sin hacerlo rígido.</div>
 <div class="btns"><button id="installBtn" class="btn" style="display:none" onclick="installApp()">📲 Instalar Mi Agenda</button></div>
@@ -216,13 +257,18 @@ h1{margin:0;font-size:28px}.sub{color:var(--muted);font-size:13px;margin-top:4px
   <div class="btns"><button class="btn" onclick="savePlanner()">✨ Crear mi rutina</button><button class="btn secondary" onclick="closePlanner()">Cancelar</button></div>
  </div>
 </div>
-<nav class="bottom"><div class="nav">
-<button class="active" onclick="nav('homeView',this)">🏠<br>Hoy</button>
-<button onclick="nav('calendarView',this)">🗓️<br>Calendario</button>
-<button onclick="nav('tasksView',this)">☑️<br>Tareas</button>
-<button onclick="nav('familyView',this)">👨‍👩‍👦<br>Familia</button>
-<button onclick="nav('progressView',this)">📊<br>Progreso</button>
-</div></nav>
+
+<nav class="appnav" aria-label="Navegación principal">
+ <div class="appnavInner">
+  <button class="active" onclick="nav('homeView',this)"><span class="navIcon">🏠</span>Hoy</button>
+  <button onclick="nav('calendarView',this)"><span class="navIcon">🗓️</span>Calendario</button>
+  <button onclick="nav('tasksView',this)"><span class="navIcon">☑️</span>Checklist</button>
+  <button onclick="nav('familyView',this)"><span class="navIcon">🏡</span>Casa</button>
+  <button onclick="nav('progressView',this)"><span class="navIcon">📊</span>Progreso</button>
+ </div>
+</nav>
+<button class="fab" aria-label="Agregar tarea" onclick="document.getElementById('addText').focus()">＋</button>
+
 
 <script>
 const KEY='mi-agenda-v4';
