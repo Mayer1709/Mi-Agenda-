@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#d9828b">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Mi Agenda">
+<title>Mi Agenda — Personal</title>
+<style>
+:root{--bg:#fff8f6;--card:#fff;--ink:#332b2b;--muted:#817477;--pink:#d9828b;--pink2:#f8e4e5;--green:#6f9b7b;--yellow:#fff4cf;--blue:#e9f0fa;--line:#eadedf;--shadow:0 7px 22px rgba(80,45,45,.07)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Neue",Arial,sans-serif;padding-bottom:78px}
+.app{max-width:780px;margin:auto;padding:12px 13px 30px}.hero{background:linear-gradient(135deg,#f5dfe1,#fff);border-radius:28px;padding:19px;box-shadow:var(--shadow)}
+h1{margin:0;font-size:28px}.sub{color:var(--muted);font-size:13px;margin-top:4px}.now{margin-top:14px;background:#ffffffd9;border:1px solid var(--line);border-radius:18px;padding:12px}.now small{color:var(--muted)}.now b{display:block;font-size:18px;margin-top:3px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:11px}.stat{background:#ffffffc9;border:1px solid var(--line);border-radius:13px;padding:8px 4px;text-align:center;font-size:11px}.stat b{display:block;font-size:18px}
+.section{margin-top:17px}.title{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}.title h2{font-size:17px;margin:0}.title span{font-size:12px;color:var(--muted)}
+.task{display:grid;grid-template-columns:29px 55px 1fr 36px;gap:7px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:15px;padding:9px;margin:7px 0;box-shadow:0 2px 8px rgba(70,40,40,.04)}.task input{width:21px;height:21px;accent-color:var(--green)}.time{font-size:12px;font-weight:800;color:#775e61}.text{font-size:14px}.task.done{opacity:.58}.task.done .text{text-decoration:line-through}.move,.iconbtn{border:0;background:var(--pink2);border-radius:10px;padding:8px;cursor:pointer}.tag{font-size:10px;padding:3px 5px;border-radius:8px;background:#f0e8e8}.tag.high{background:#f8dddd}.tag.low{background:#edf3ed}
+.panel{background:#fff;border:1px solid var(--line);border-radius:18px;padding:14px;margin-top:15px;box-shadow:var(--shadow)}.panel h3{margin:0 0 9px;font-size:16px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}.quick{border:1px solid var(--line);background:#fff;border-radius:14px;padding:12px;text-align:left}.quick strong{display:block}.quick span{font-size:12px;color:var(--muted)}
+.btns{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}.btn{border:0;border-radius:12px;padding:10px 12px;background:var(--pink2);font-weight:700;color:var(--ink)}.btn.secondary{background:#fff;border:1px solid var(--line)}
+.form{display:grid;grid-template-columns:90px 1fr;gap:8px}.form>*{min-width:0}.form input,.form select{border:1px solid var(--line);border-radius:11px;padding:10px;background:#fff}.full{grid-column:1/-1}
+.tabs{display:flex;gap:7px;margin:15px 0 2px}.tab{flex:1;border:1px solid var(--line);background:#fff;border-radius:13px;padding:10px;font-weight:750}.tab.active{background:var(--pink2)}
+.view{display:none}.view.active{display:block}.empty{color:var(--muted);font-size:13px}.rescue{background:var(--yellow);border-color:#eadcae}.itemrow{display:flex;justify-content:space-between;gap:8px;padding:8px 0;border-bottom:1px solid #eee}.itemrow:last-child{border:0}
+.calendarHead{display:flex;justify-content:space-between;align-items:center}.calendarGrid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-top:10px}.calcell{min-height:58px;border:1px solid var(--line);border-radius:9px;padding:5px;background:#fff;font-size:11px}.calcell b{font-size:12px}.calcell.today{border:2px solid var(--pink)}.calcell.has{background:#fff4f4}.calhead{font-size:10px;color:var(--muted);text-align:center}
+.weekrow{display:grid;grid-template-columns:76px 1fr;gap:8px;padding:10px 0;border-bottom:1px solid var(--line);font-size:13px}.weekrow b{font-size:12px}
+.bottom{position:fixed;bottom:0;left:0;right:0;background:#fffdfd;border-top:1px solid var(--line);display:flex;justify-content:center;z-index:10}.nav{max-width:780px;width:100%;display:grid;grid-template-columns:repeat(5,1fr);gap:3px;padding:7px 8px calc(7px + env(safe-area-inset-bottom))}.nav button{border:0;background:transparent;padding:7px 2px;border-radius:12px;font-size:11px;color:#6f6567}.nav button.active{background:var(--pink2);font-weight:800}
+@media(max-width:430px){.stats{grid-template-columns:repeat(2,1fr)}.task{grid-template-columns:28px 51px 1fr 34px}.text{font-size:13px}.grid2{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="hero">
+<h1>🌷 Mi Agenda</h1><div class="sub">Tu centro personal para organizar el día sin hacerlo rígido.</div>
+<div class="btns"><button id="installBtn" class="btn" style="display:none" onclick="installApp()">📲 Instalar Mi Agenda</button></div>
+<div class="now"><small id="clockLabel">Ahora</small><b id="nextTask">Cargando…</b><span id="nextMeta" style="font-size:12px;color:var(--muted)"></span></div>
+<div class="stats"><div class="stat">✅ Hechas<b id="done">0</b></div><div class="stat">🟡 Pendientes<b id="pending">0</b></div><div class="stat">🔄 Movidas<b id="moved">0</b></div><div class="stat">📈 Progreso<b id="pct">0%</b></div></div>
+</header>
+
+<section id="homeView" class="view active">
+<div class="panel">
+<div class="title"><h2>☀️ Mi día</h2><span id="todayDate"></span></div>
+<div id="todayTasks"></div>
+</div>
+<div class="panel">
+<h3>⚡ Acciones rápidas</h3>
+<div class="grid2">
+<button class="quick" onclick="addQuick('❤️ Tiempo para mí','⭐ Personal')"><strong>❤️ Tiempo para mí</strong><span>Añadir 20 min</span></button>
+<button class="quick" onclick="addQuick('🛒 Revisar compras','🏡 Casa')"><strong>🛒 Compras</strong><span>Crear pendiente</span></button>
+<button class="quick" onclick="addQuick('🧺 Ropa','🏡 Casa')"><strong>🧺 Ropa</strong><span>Agregar tarea</span></button>
+<button class="quick" onclick="addQuick('📋 Revisar pendientes','⭐ Personal')"><strong>📋 Pendientes</strong><span>Agregar revisión</span></button>
+</div>
+</div>
+</section>
+
+<section id="calendarView" class="view">
+<div class="panel"><div class="calendarHead"><h3>🗓️ Calendario</h3><input id="calMonth" type="month"></div><div id="calendar"></div></div>
+</section>
+
+<section id="tasksView" class="view">
+<div class="panel"><h3>☑️ Todas mis tareas</h3><div id="allTasks"></div></div>
+</section>
+
+<section id="familyView" class="view">
+<div class="panel"><h3>👨‍👩‍👦 Casa & Familia</h3><div id="familyTasks"></div>
+<div class="btns"><button class="btn" onclick="addQuick('👶 Pendiente del bebé','👶 Bebé')">+ Bebé</button><button class="btn" onclick="addQuick('🎒 Pendiente escolar','👦 Eithan')">+ Escuela</button><button class="btn" onclick="addQuick('🏠 Tarea de casa','🏡 Casa')">+ Casa</button></div></div>
+</section>
+
+<section id="progressView" class="view">
+<div class="panel"><h3>📊 Mi progreso</h3><div class="grid2">
+<div class="quick"><strong id="progressBig">0%</strong><span>Completado hoy</span></div>
+<div class="quick"><strong id="streak">0</strong><span>Días registrados</span></div>
+</div>
+<div class="btns"><button class="btn" onclick="rescueAll()">🔄 Rescatar pendientes</button><button class="btn secondary" onclick="resetDay()">↺ Reiniciar día</button></div></div>
+<div class="panel"><h3>🔄 Rescatar hoy</h3><div id="rescue"></div></div>
+</section>
+
+<section class="panel">
+<h3>➕ Nueva tarea</h3>
+<div class="form">
+<input id="addTime" type="time"><select id="addCat"><option>⭐ Personal</option><option>🏡 Casa</option><option>👶 Bebé</option><option>👦 Eithan</option><option>💼 Trabajo</option><option>💻 Productividad</option></select>
+<input id="addText" class="full" placeholder="¿Qué necesitas hacer?">
+<select id="addPriority" class="full"><option value="normal">Prioridad normal</option><option value="high">⭐ Importante</option><option value="low">🌿 Si hay tiempo</option></select>
+<button class="btn full" onclick="addTask()">Agregar tarea</button>
+</div>
+</section>
+</div>
+
+<nav class="bottom"><div class="nav">
+<button class="active" onclick="nav('homeView',this)">🏠<br>Hoy</button>
+<button onclick="nav('calendarView',this)">🗓️<br>Calendario</button>
+<button onclick="nav('tasksView',this)">☑️<br>Tareas</button>
+<button onclick="nav('familyView',this)">👨‍👩‍👦<br>Familia</button>
+<button onclick="nav('progressView',this)">📊<br>Progreso</button>
+</div></nav>
+
+<script>
+const KEY='mi-agenda-v4';
+let deferredInstall=null;
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredInstall=e;document.getElementById('installBtn').style.display='inline-block'});
+async function installApp(){if(!deferredInstall)return;deferredInstall.prompt();await deferredInstall.userChoice;deferredInstall=null;document.getElementById('installBtn').style.display='none'}
+if('serviceWorker' in navigator && location.protocol!=='file:'){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}))}
+
+const routine=[
+["🌅 Mañana","6:30","💧 Levantarme + tomar agua","high"],["🌅 Mañana","6:35","🧼 Aseo personal + arreglarme","normal"],["🌅 Mañana","6:50","👶 Atender al bebé","high"],["🌅 Mañana","7:00","🍳 Desayuno","high"],["🌅 Mañana","7:10","🎒 Revisar mochila y preparar a Eithan","high"],["🌅 Mañana","7:20","🚌 Dejar a Eithan en el bus escolar","high"],["🌅 Mañana","7:30","🛏️ Tender la cama","normal"],["🌅 Mañana","7:45","🍽️ Recoger cocina","normal"],["🌅 Mañana","8:00","👶 Tiempo del bebé","high"],["🌅 Mañana","8:30","🧹 Orden rápido de la casa","normal"],["🌅 Mañana","9:00","☕ Pausa + agua/café","normal"],
+["💻 Productividad","9:30","🎯 Tarea principal del día","high"],["💻 Productividad","10:15","🧺 Ropa / organización","normal"],["💻 Productividad","10:45","🔄 Recuperar pendientes reprogramados","normal"],["💻 Productividad","11:15","💻 Proyecto personal / trabajo online","high"],["💻 Productividad","11:45","🧹 Orden rápido final","low"],
+["🍽️ Mediodía","12:00","🍽️ Almuerzo","high"],["🍽️ Mediodía","12:30","🧼 Recoger cocina","normal"],["🍽️ Mediodía","1:00","👶 Bebé + descanso","high"],["🍽️ Mediodía","2:00","🍲 Preparar comida/cena","normal"],["🍽️ Mediodía","2:45","🏠 Última ronda de organización","normal"],["🍽️ Mediodía","3:15","❤️ Tiempo para mí","high"],["🍽️ Mediodía","3:30","🎒 Preparar cosas para la tarde","normal"],
+["👦 Tarde","4:00","🚌 Recibir a Eithan","high"],["👦 Tarde","4:10","🥪 Merienda","high"],["👦 Tarde","4:20","📚 Revisar mochila y tareas","high"],["👦 Tarde","4:40","👚 Prepararme para el trabajo","high"],["👦 Tarde","4:50","💧 Agua + dejar todo listo","normal"],
+["💼 Trabajo","5:00","💼 Trabajo — hasta 10:00 p. m.","high"],["💼 Trabajo","7:00","💧 Pausa + hidratación","normal"],["💼 Trabajo","8:30","🍎 Snack/comida si corresponde","normal"],["💼 Trabajo","10:00","🏠 Terminar trabajo y regresar a casa","high"],
+["🌙 Noche","10:10","👶 Revisar al bebé","high"],["🌙 Noche","10:20","🍽️ Cena","high"],["🌙 Noche","10:35","🧼 Cocina rápida","normal"],["🌙 Noche","10:45","🚿 Aseo personal","high"],["🌙 Noche","10:55","🎒 Preparar lo básico para mañana","normal"],["🌙 Noche","11:00","😴 Dormir","high"]
+];
+let state=JSON.parse(localStorage.getItem(KEY)||'null');
+if(!state) state={tasks:routine.map((x,i)=>({id:i,section:x[0],time:x[1],text:x[2],priority:x[3],done:false,moved:false,cat:catFor(x[0])})),rescue:[],days:0};
+function catFor(s){return s.includes('Trabajo')?'💼 Trabajo':s.includes('Eithan')||s.includes('Tarde')?'👦 Eithan':s.includes('Bebé')?'👶 Bebé':s.includes('Product')?'💻 Productividad':s.includes('Mediodía')||s.includes('Mañana')||s.includes('Noche')?'🏡 Casa':'⭐ Personal'}
+function esc(s){return s.replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+function save(){localStorage.setItem(KEY,JSON.stringify(state));render()}
+function taskHTML(t){return `<div class="task ${t.done?'done':''}"><input type="checkbox" ${t.done?'checked':''} onchange="toggle(${t.id})"><div class="time">${t.time}</div><div class="text">${esc(t.text)} <span class="tag ${t.priority}">${t.priority==='high'?'⭐':t.priority==='low'?'🌿':''}</span></div><button class="move" onclick="move(${t.id})">↪️</button></div>`}
+function render(){
+ const sorted=[...state.tasks].sort((a,b)=>a.time.localeCompare(b.time));
+ const groups={};sorted.forEach(t=>(groups[t.section]??=[]).push(t));
+ let out='';for(const [s,ts] of Object.entries(groups)){out+=`<section class="section"><div class="title"><h2>${s}</h2><span>${ts.filter(t=>t.done).length}/${ts.length}</span></div>${ts.map(taskHTML).join('')}</section>`}
+ document.getElementById('todayTasks').innerHTML=out;
+ document.getElementById('allTasks').innerHTML=sorted.map(taskHTML).join('')||'<div class="empty">No hay tareas.</div>';
+ document.getElementById('familyTasks').innerHTML=sorted.filter(t=>['👶 Bebé','👦 Eithan','🏡 Casa'].includes(t.cat)).map(taskHTML).join('')||'<div class="empty">No hay pendientes de familia/casa.</div>';
+ const done=state.tasks.filter(t=>t.done).length,total=state.tasks.length,pending=total-done;
+ document.getElementById('done').textContent=done;document.getElementById('pending').textContent=pending;document.getElementById('moved').textContent=state.tasks.filter(t=>t.moved).length+state.rescue.length;
+ document.getElementById('pct').textContent=total?Math.round(done/total*100)+'%':'0%';document.getElementById('progressBig').textContent=total?Math.round(done/total*100)+'%':'0%';document.getElementById('streak').textContent=state.days||0;
+ document.getElementById('todayDate').textContent=new Date().toLocaleDateString('es-US',{weekday:'long',day:'numeric',month:'long'});
+ document.getElementById('rescue').innerHTML=state.rescue.length?state.rescue.map((r,i)=>`<div class="itemrow"><span>🟡 ${esc(r.text)}</span><button class="iconbtn" onclick="restore(${i})">↩️</button></div>`).join(''):'<div class="empty">Nada pendiente aquí. ✨</div>';
+ next();
+ calendar();
+}
+function next(){
+ const now=new Date(),mins=now.getHours()*60+now.getMinutes();
+ const candidates=state.tasks.filter(t=>!t.done&&/^\d\d:\d\d$/.test(t.time)).map(t=>({...t,m:t.time.slice(0,2)*60+Number(t.time.slice(3))})).sort((a,b)=>a.m-b.m);
+ let n=candidates.find(t=>t.m>=mins)||candidates[0];
+ document.getElementById('nextTask').textContent=n?n.text:'🎉 ¡Agenda completada por hoy!';
+ document.getElementById('nextMeta').textContent=n?`${n.time} · ${n.cat}`:'Puedes disfrutar el resto del día.';
+ document.getElementById('clockLabel').textContent='Ahora · '+now.toLocaleTimeString('es-US',{hour:'numeric',minute:'2-digit'});
+}
+function toggle(id){let t=state.tasks.find(x=>x.id===id);if(t){t.done=!t.done;if(t.done&&state.tasks.every(x=>x.done))state.days=(state.days||0)+1;save()}}
+function move(id){let i=state.tasks.findIndex(x=>x.id===id);if(i<0)return;let t=state.tasks[i];state.rescue.push({text:t.time+' — '+t.text,original:t});state.tasks.splice(i,1);save()}
+function restore(i){let r=state.rescue.splice(i,1)[0];r.original.done=false;r.original.moved=true;state.tasks.push(r.original);save()}
+function rescueAll(){state.tasks.filter(t=>!t.done).forEach(t=>state.rescue.push({text:t.time+' — '+t.text,original:t}));state.tasks=state.tasks.filter(t=>t.done);save()}
+function addTask(){let text=document.getElementById('addText').value.trim();if(!text)return;let time=document.getElementById('addTime').value||'--:--';state.tasks.push({id:Date.now(),section:'➕ Agregadas',time,text,priority:document.getElementById('addPriority').value,done:false,moved:false,cat:document.getElementById('addCat').value});document.getElementById('addText').value='';save()}
+function addQuick(text,cat){state.tasks.push({id:Date.now(),section:'⭐ Personal',time:'--:--',text,priority:'normal',done:false,moved:false,cat});save()}
+function resetDay(){if(confirm('¿Reiniciar la agenda de hoy?')){state={tasks:routine.map((x,i)=>({id:i,section:x[0],time:x[1],text:x[2],priority:x[3],done:false,moved:false,cat:catFor(x[0])})),rescue:[],days:state.days||0};save()}}
+function nav(id,btn){document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));btn.classList.add('active')}
+function calendar(){
+ const el=document.getElementById('calendar'),d=new Date(),y=d.getFullYear(),m=d.getMonth();let first=new Date(y,m,1).getDay();first=(first+6)%7;let days=new Date(y,m+1,0).getDate();let s='<div class="calendarGrid">'+['L','M','X','J','V','S','D'].map(x=>`<div class="calhead">${x}</div>`).join('');
+ for(let i=0;i<first;i++)s+='<div></div>';
+ for(let n=1;n<=days;n++){let has=n===d.getDate()?' today':'';s+=`<div class="calcell${has}"><b>${n}</b><br><span>${n===d.getDate()?'Hoy':''}</span></div>`}s+='</div>';el.innerHTML=s;
+}
+document.getElementById('calMonth').value=new Date().toISOString().slice(0,7);render();setInterval(next,30000);
+</script>
+</body>
+</html>
